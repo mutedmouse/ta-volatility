@@ -39,27 +39,30 @@ else:
 
 if hosts:
 	r2 = re.compile(".*consoles.*")
+	r3 = re.compile("(?!.*\.(filepart|tmp)$)")
 	for host in hosts:
 		targets = os.listdir(str(base_dir)+str(platform_target[0])+file_sep+str(host))
-		target = filter(r2.match, targets)
+		target = filter(r3.match, filter(r2.match, targets))
 		if target:
 			for fitem in target:
-		#print "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}".format("host", "Console Process", "Console PID", "Console ID", "Command History Size", "History Buffer Count", "History Buffer Max", "OriginalTitle", "Title", "Attached Process Name", "Attached Process PID", "Attached Process Handle", "Command History ID", "Command History Applications", "Command History Flags", "Command History Count", "Command History Last Added", "Command History Last Displayed", "Command History First Command", "Command History Command Count Max", "Command History Process Handle", "Command History Command Number", "Command History Command Offset", "Command History Command String", "EXE Alias", "EXE Alias Source", "EXE Alias Target", "Screen ID", "Screen X", "Screen Y", "Screen Dump")
-				with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
-					windows_consoles = None
-					try:
-						windows_consoles =  json.loads(f.readline())
-					except:
-						pass
+				if os.stat(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem)).st_size != 0:
+				#print "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}".format("host", "Console Process", "Console PID", "Console ID", "Command History Size", "History Buffer Count", "History Buffer Max", "OriginalTitle", "Title", "Attached Process Name", "Attached Process PID", "Attached Process Handle", "Command History ID", "Command History Applications", "Command History Flags", "Command History Count", "Command History Last Added", "Command History Last Displayed", "Command History First Command", "Command History Command Count Max", "Command History Process Handle", "Command History Command Number", "Command History Command Offset", "Command History Command String", "EXE Alias", "EXE Alias Source", "EXE Alias Target", "Screen ID", "Screen X", "Screen Y", "Screen Dump")
+					with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
+						windows_consoles = None
+						try:
+							windows_consoles =  json.loads(f.readline())
+						except:
+							pass
+	
+						if windows_consoles:
+							for element in windows_consoles['rows']:
+								element	= [str(x) for x in element]
+								element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
+								try:
+									print host+"\t"+"\t".join(element)
+								except:
+									pass
 
-					if windows_consoles:
-						for element in windows_consoles['rows']:
-							element	= [str(x) for x in element]
-							element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
-							try:
-								print host+"\t"+"\t".join(element)
-							except:
-								pass
-				os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
+					os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
 else:
 	exit(1)

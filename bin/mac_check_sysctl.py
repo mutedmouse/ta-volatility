@@ -40,27 +40,29 @@ else:
 
 if hosts:
 	r2 = re.compile(".*mac_check_sysctl.*")
+	r3 = re.compile("(?!.*\.(filepart|tmp)$)")
 	for host in hosts:
 		targets = os.listdir(str(base_dir)+str(platform_target[0])+file_sep+str(host))
-		target = filter(r2.match, targets)
+		target = filter(r3.match, filter(r2.match, targets))
 		if target:
 			for fitem in target:
-		#print "{}\t{}\t{}\t{}\t{}\t{}".format("Name", "Number", "Permissions", "Handler", "Status", "Value")
-				with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
-					mac_check_sysctl = None
-					try:
-						mac_check_sysctl =  json.loads(f.readline())
-					except:
-						pass
-					
-					if mac_check_sysctl:
-						for element in mac_check_sysctl['rows']:
-							element = [str(x) for x in element]
-							element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
-							try:
-								print host+"\t"+"\t".join(element)
-							except:
-								pass
-				os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
+				if os.stat(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem)).st_size != 0:
+				#print "{}\t{}\t{}\t{}\t{}\t{}".format("Name", "Number", "Permissions", "Handler", "Status", "Value")
+					with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
+						mac_check_sysctl = None
+						try:
+							mac_check_sysctl =  json.loads(f.readline())
+						except:
+							pass
+						
+						if mac_check_sysctl:
+							for element in mac_check_sysctl['rows']:
+								element = [str(x) for x in element]
+								element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
+								try:
+									print host+"\t"+"\t".join(element)
+								except:
+									pass
+					os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
 else:
 	exit(1)

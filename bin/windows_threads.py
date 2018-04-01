@@ -39,29 +39,31 @@ else:
 
 if hosts:
 	r2 = re.compile(".*threads.*")
+	r3 = re.compile("(?!.*\.(filepart|tmp)$)")
 	for host in hosts:
 		targets = os.listdir(str(base_dir)+str(platform_target[0])+file_sep+str(host))
-		target = filter(r2.match, targets)
+		target = filter(r3.match, filter(r2.match, targets))
 		if target:
 			for fitem in target:
-		#print "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}".format("host", "Offset", "PID", "TID", "Tags", "Create Time", "Exit Time", "Owning Process", "Attached Process", "State", "State Reason", "Base Priority", "Priority", "TEB", "Start Address", "Owner Name", "Win32 Start Address", "Win32 Thread", "Cross Thread Flags", "EIP", "EAX", "EBX", "ECX", "EDX", "ESI", "EDI", "ESP", "EBP", "ErrCode", "SegCS", "SegSS", "SegDS", "SegES", "SegGS", "SegFS", "EFlags", "dr0", "dr1", "dr2", "dr3", "dr6", "dr7", "SSDT", "Entry Number", "Descriptor Service Table", "Hook Number", "Function Name", "Function Address", "Module Name", "Disassembly")
-				with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
-					windows_threads = None
-					try:
-						windows_threads =  json.loads(f.readline())
-					except:
-						pass
-
-					if windows_threads:
-						for element in windows_threads['rows']:
-							element = [str(x) for x in element]
-							element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
-							try:
-								for dis in element[48].split("\n"):
-									dis = str(re.sub(r'\s+', r' ', str(dis)))
-									print host+"\t"+"\t".join(str(x) for x in element[:47])+"\t"+dis
-							except:
-								pass
-				os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))	
+				if os.stat(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem)).st_size != 0:
+				#print "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}".format("host", "Offset", "PID", "TID", "Tags", "Create Time", "Exit Time", "Owning Process", "Attached Process", "State", "State Reason", "Base Priority", "Priority", "TEB", "Start Address", "Owner Name", "Win32 Start Address", "Win32 Thread", "Cross Thread Flags", "EIP", "EAX", "EBX", "ECX", "EDX", "ESI", "EDI", "ESP", "EBP", "ErrCode", "SegCS", "SegSS", "SegDS", "SegES", "SegGS", "SegFS", "EFlags", "dr0", "dr1", "dr2", "dr3", "dr6", "dr7", "SSDT", "Entry Number", "Descriptor Service Table", "Hook Number", "Function Name", "Function Address", "Module Name", "Disassembly")
+					with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
+						windows_threads = None
+						try:
+							windows_threads =  json.loads(f.readline())
+						except:
+							pass
+	
+						if windows_threads:
+							for element in windows_threads['rows']:
+								element = [str(x) for x in element]
+								element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
+								try:
+									for dis in element[48].split("\n"):
+										dis = str(re.sub(r'\s+', r' ', str(dis)))
+										print host+"\t"+"\t".join(str(x) for x in element[:47])+"\t"+dis
+								except:
+									pass
+					os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))	
 else:
 	exit(1)

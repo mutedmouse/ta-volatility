@@ -39,28 +39,30 @@ else:
 
 if hosts:
 	r2 = re.compile(".*imageinfo.*")
+	r3 = re.compile("(?!.*\.(filepart|tmp)$)")
 	for host in hosts:
 		targets = os.listdir(str(base_dir)+str(platform_target[0])+file_sep+str(host))
-		target = filter(r2.match, targets)
+		target = filter(r3.match, filter(r2.match, targets))
 		if target:
 			for fitem in target:
+				if os.stat(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem)).st_size != 0:
 				#print "{}\t{}\t{}\t{}\t{}\t{}".format("image","suggested_profile_s","as_layer1","as_layer2","as_layer3","pae_type","dtb","kdbg","number_of_processors","image_type__service_pack","kpcr_for_cpu_0","kuser_shared_data","image_date_and_time","image_local_date_and_time")
-				with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
-					windows_imageinfo = None
-					try:
-						windows_imageinfo =  json.loads(f.readline())
-					except:
-						pass
-
-					if windows_imageinfo:
-						for element in windows_imageinfo['rows']: 
-							element	= [str(x) for x in element]
-							element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
-							try:
-								print host+"\t"+"\t".join(element)
-							except:
-								pass
-									
-				os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
+					with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
+						windows_imageinfo = None
+						try:
+							windows_imageinfo =  json.loads(f.readline())
+						except:
+							pass
+	
+						if windows_imageinfo:
+							for element in windows_imageinfo['rows']: 
+								element	= [str(x) for x in element]
+								element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
+								try:
+									print host+"\t"+"\t".join(element)
+								except:
+									pass
+										
+					os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
 else:
 	exit(1)

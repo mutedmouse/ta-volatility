@@ -40,27 +40,29 @@ else:
 
 if hosts:
 	r2 = re.compile(".*linux_python_strings.*")
+	r3 = re.compile("(?!.*\.(filepart|tmp)$)")
 	for host in hosts:
 		targets = os.listdir(str(base_dir)+str(platform_target[0])+file_sep+str(host))
-		target = filter(r2.match, targets)
+		target = filter(r3.match, filter(r2.match, targets))
 		if target:
 			for fitem in target:
-		#print "{}\t{}\t{}\t{}".format("Pid", "Name", "Size", "String")
-				with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
-					linux_python_strings = None
-					try:
-						linux_python_strings =  json.loads(f.readline())
-					except:
-						pass
-					
-					if linux_python_strings:
-						for element in linux_python_strings['rows']:
-							element = [str(x) for x in element]
-							element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
-							try:
-								print host+"\t"+"\t".join(element)
-							except:
-								pass
-				os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
+				if os.stat(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem)).st_size != 0:
+				#print "{}\t{}\t{}\t{}".format("Pid", "Name", "Size", "String")
+					with open(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem), 'r') as f:
+						linux_python_strings = None
+						try:
+							linux_python_strings =  json.loads(f.readline())
+						except:
+							pass
+						
+						if linux_python_strings:
+							for element in linux_python_strings['rows']:
+								element = [str(x) for x in element]
+								element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
+								try:
+									print host+"\t"+"\t".join(element)
+								except:
+									pass
+					os.remove(str(str(base_dir)+str(platform_target[0])+file_sep+str(host)+file_sep+fitem))			
 else:
 	exit(1)
