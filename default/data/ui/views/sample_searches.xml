@@ -1,0 +1,45 @@
+<form>
+  <label>Sample Searches</label>
+  <description>Sample Searches for TA-Volatility</description>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel>
+      <title>Statistics Table Searches</title>
+      <input type="dropdown" token="drpsearcher" searchWhenChanged="true">
+        <label>Search Selection:</label>
+        <choice value="| inputlookup sample_pslist.csv | table image,name,pid,ppid | lookup sample_parents.csv image as image ppid as ppid OUTPUTNEW pname as pname">PSLIST relationships</choice>
+        <choice value="| inputlookup sample_psxview.csv | table name,pid,csrss,desk_thrd,pslist,pspcid,psscan,session,thrd_proc | outputlookup sample_psxview.csv | eval rating=0 | foreach csrss,desk_thrd,pslist,pspcid,psscan,session,thrd_proc [ eval rating=if(&lt;&lt;FIELD&gt;&gt;=&quot;False&quot;, rating+1, rating) ] | sort - rating">PSXVIEW ratings</choice>
+      </input>
+      <table>
+        <search>
+          <query>$drpsearcher$</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">15</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Sankey Searches</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <title>Process Diagraming with Sankey</title>
+        <search>
+          <query>| inputlookup sample_pslist.csv | table image,name,pid,ppid | lookup sample_parents.csv image as image ppid as ppid OUTPUTNEW pname as pname | stats count by pname,name</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+      </viz>
+    </panel>
+  </row>
+</form>
