@@ -38,7 +38,7 @@ else:
 	exit(1)
 
 if hosts:
-	r2 = re.compile(".*envar.*")
+	r2 = re.compile(".*envars.*")
 	r3 = re.compile("(?!.*\.(filepart|tmp)$)")
 	for host in hosts:
 		targets = os.listdir(str(base_dir)+str(platform_target[0])+file_sep+str(host))
