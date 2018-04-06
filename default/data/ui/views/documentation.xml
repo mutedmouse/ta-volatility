@@ -1,0 +1,17 @@
+<dashboard>
+  <label>Documentation</label>
+  <description>TA-volatility guide and documentation dashboard</description>
+  <row>
+    <panel>
+      <event>
+        <title>something</title>
+        <search>
+          <query>index::main source::volatility</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="list.drilldown">none</option>
+      </event>
+    </panel>
+  </row>
+</dashboard>
