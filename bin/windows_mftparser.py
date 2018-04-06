@@ -58,6 +58,8 @@ if hosts:
 							for element in windows_mftparser['rows']: 
 								element	= [str(x) for x in element]
 								element = [(re.sub(r'\\', r'\\\\', str(el))) for el in element]
+								element = [(re.sub(r'\r', r' ', str(el))) for el in element]
+								element = [(re.sub(r'\n', r' ', str(el))) for el in element]
 								try:
 									print host+"\t"+"\t".join(element)
 								except:
