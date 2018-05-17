@@ -4,7 +4,6 @@ define(
     ["backbone", "jquery", "splunkjs/splunk"],
     function(Backbone, jquery, splunk_js_sdk) {
         sdk = splunk_js_sdk;
-        //var ExampleView = Backbone.View.extend({
         var VolatilitySetup = Backbone.View.extend({
             // -----------------------------------------------------------------
             // Backbon Functions, These are specific to the Backbone library
@@ -36,15 +35,11 @@ define(
                 this.display_error_output([]);
 
                 console.log("Triggering setup");
-                //var api_url_input_element = jquery("input[name=api_url]");
                 var base_directory_input_element = jquery("input[name=base_directory]");
                 var base_directory = "\"" + base_directory_input_element.val().replace('/', '//') + "\"";
                 
-                //var sanitized_api_url = this.sanitize_string(api_url);
-                //var sanitized_base_directory = this.sanitize_string(base_directory);
 
                 var error_messages_to_display = this.validate_inputs(
-                //    //sanitized_base_directory,
                     base_directory,
                 );
 
@@ -53,7 +48,6 @@ define(
                     // Displays the errors that occurred input validation
                     this.display_error_output(error_messages_to_display);
                 } else {
-                    //var fully_qualified_url = "https://" + sanitized_api_url;
                     var verified_base_directory = base_directory;
                     this.perform_setup(
                         splunk_js_sdk,
@@ -65,7 +59,6 @@ define(
             // This is where the main setup process occurs
             //perform_setup: async function perform_setup(splunk_js_sdk, api_url) {
             perform_setup: async function perform_setup(splunk_js_sdk, base_directory) {
-                //var app_name = "developer_guidance_setup_view";
                 var app_name = "TA-volatility";
 
                 var application_name_space = {
@@ -153,7 +146,6 @@ define(
             },
 
             complete_setup: async function complete_setup(splunk_js_sdk_service) {
-                //var app_name = "developer_guidance_setup_view";
                 var app_name = "TA-volatility";
                 var configuration_file_name = "app";
                 var stanza_name = "install";
@@ -408,8 +400,6 @@ define(
             // Input Cleaning and Checking
             // ----------------------------------
             sanitize_string: function sanitize_string(string_to_sanitize) {
-                //var sanitized_string = string_to_sanitize.trim();
-
                 return sanitized_string;
             },
 
@@ -417,7 +407,6 @@ define(
             validate_base_directory_input: function validate_base_directory_input(base_directory) {
                 var error_messages = [];
 
-                //var is_string_empty = typeof hostname === "undefined" || hostname === "";
                 var is_string_empty = typeof base_directory === "undefined" || base_directory === "";
                 
                 if (is_string_empty) {
@@ -429,14 +418,11 @@ define(
                 return error_messages;
             },
 
-            //validate_inputs: function validate_inputs(hostname) {
             validate_inputs: function validate_inputs(base_directory) {
                 var error_messages = [];
 
-                //var api_url_errors = this.validate_api_url_input(hostname);
                 var base_directory_errors = this.validate_base_directory_input(base_directory);
 
-                //error_messages = error_messages.concat(api_url_errors);
                 error_messages = error_messages.concat(base_directory_errors);
 
                 return error_messages;
@@ -518,7 +504,6 @@ define(
                     "        This setup will create/modify two files in the local directory of this Splunk App." +
                     "        <br/>" +
                     "        <br/>" +
-                    //"        Splunk App Directory Path: `$SPLUNK_HOME/etc/apps/developer_guidance_setup_view/local/`" +
                     "        Splunk App Directory Path: `$SPLUNK_HOME/etc/apps/TA-volatility/local/`" +
                     "        <ul>" +
                     "            <li>app.conf" +
@@ -583,17 +568,17 @@ define(
                     "                </br>" +
                     "            |&emsp;&emsp;|_pslist.json" +
                     "                </br>" +
-                    "            |&emsp;&emsp|_plugin_name.json" +
+                    "            |&emsp;&emsp;|_plugin_name.json" +
                     "                </br>" +
                     "            |" +
                     "                </br>" +
                     "            |_windows" +
                     "                </br>" +
-                    "            |&emsp;|_(Subject System Hostname)" +
+                    "            &emsp;|_(Subject System Hostname)" +
                     "                </br>" +
-                    "            |&emsp;&emsp;|_pslist.json" +
+                    "            &emsp;&emsp;|_pslist.json" +
                     "                </br>" +
-                    "            |&emsp;&emsp;|_plugin_name.json" +
+                    "            &emsp;&emsp;|_plugin_name.json" +
                     "                </br>" +
                     "            </div>" +
                     "        </div>" +

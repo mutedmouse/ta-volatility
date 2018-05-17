@@ -43,6 +43,8 @@ class ListProcessCommand(ReportingCommand):
         pid_ppid = collections.defaultdict(list)
         q = collections.deque()
         o = collections.deque()
+        p = collections.deque()
+        seen = set()
         for record in records:
           tree[record[self.ppid_field]].append(record[self.pid_field])
           name_id[record[self.pid_field]].append(record[self.process_field])
@@ -50,14 +52,23 @@ class ListProcessCommand(ReportingCommand):
 
         q.append(str(self.root_process_id))
         o.append(str(self.root_process_id))
+        p.append("False")
+        seen.add(str(self.root_process_id))
         while len(q) > 0:
             children = tree[q.popleft()]
             for child in children:
-                q.append(child)
-                o.append(child)
+                if child not in seen:
+                    q.append(child)
+                    o.append(child)
+                    p.append("False")
+                    seen.add(child)
+                else:
+                    p.append("True")
+                    o.append(child)
 
         while len(o)>0:
             pid=o.popleft()
-            yield {self.process_field: name_id[pid],self.pid_field:pid,self.ppid_field:pid_ppid[pid]}
+            paradox=p.popleft()
+            yield {self.process_field: name_id[pid],self.pid_field:pid,self.ppid_field:pid_ppid[pid],"paradox":paradox}
 
 dispatch(ListProcessCommand, sys.argv, sys.stdin, sys.stdout, __name__)
