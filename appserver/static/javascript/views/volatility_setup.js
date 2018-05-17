@@ -36,6 +36,7 @@ define(
 
                 console.log("Triggering setup");
                 var base_directory_input_element = jquery("input[name=base_directory]");
+                var installation_mode= jquery("#installation_mode option:selected").val();
                 var base_directory = "\"" + base_directory_input_element.val().replace('/', '//') + "\"";
                 
 
@@ -49,16 +50,18 @@ define(
                     this.display_error_output(error_messages_to_display);
                 } else {
                     var verified_base_directory = base_directory;
+                    var verified_installation_mode = installation_mode;
                     this.perform_setup(
                         splunk_js_sdk,
                         verified_base_directory,
+                        verified_installation_mode,
                     );
                 }
             },
 
             // This is where the main setup process occurs
             //perform_setup: async function perform_setup(splunk_js_sdk, api_url) {
-            perform_setup: async function perform_setup(splunk_js_sdk, base_directory) {
+            perform_setup: async function perform_setup(splunk_js_sdk, base_directory, installation_mode) {
                 var app_name = "TA-volatility";
 
                 var application_name_space = {
@@ -79,11 +82,13 @@ define(
                     await this.create_custom_configuration_file(
                         splunk_js_sdk_service,
                         base_directory,
+                        installation_mode,
                     );
 
                     await this.create_custom_configuration_file(
                         splunk_js_sdk_service,
                         base_directory,
+                        installation_mode,
                     );
 
                     // Completes the setup, by access the app.conf's [install]
@@ -123,12 +128,44 @@ define(
             create_custom_configuration_file: async function create_custom_configuration_file(
                 splunk_js_sdk_service,
                 base_directory,
+                installation_mode,
             ) {
                 var custom_configuration_file_name = "vol";
                 var stanza_name = "configs";
                 var properties_to_update = {
                     base_directory: base_directory,
+                    installation_mode: installation_mode,
                 };
+
+                await this.update_configuration_file(
+                    splunk_js_sdk_service,
+                    custom_configuration_file_name,
+                    stanza_name,
+                    properties_to_update,
+                );
+
+                await this.update_configuration_file(
+                    splunk_js_sdk_service,
+                    custom_configuration_file_name,
+                    stanza_name,
+                    properties_to_update,
+                );
+
+                var custom_configuration_file_name = "inputs";
+                var custom_input_mode = ((installation_mode == "demo" || installation_mode == "forwarder")) ? "0" : "1";
+                var stanza_name = "script://$SPLUNK_HOME/etc/apps/TA-volatility/bin/input.py";
+                var properties_to_update = {
+                    sourcetype: "volatility",
+                    disabled: custom_input_mode,
+                    interval: 30,
+                };
+
+                await this.update_configuration_file(
+                    splunk_js_sdk_service,
+                    custom_configuration_file_name,
+                    stanza_name,
+                    properties_to_update,
+                );
 
                 await this.update_configuration_file(
                     splunk_js_sdk_service,
@@ -192,7 +229,7 @@ define(
                 );
                 await splunk_js_sdk_service_configurations.fetch();
 
-                // Check for the existence of the configuration file being editect
+                // Check for the existence of the configuration file being edited
                 var does_configuration_file_exist = this.does_configuration_file_exist(
                     splunk_js_sdk_service_configurations,
                     configuration_file_name,
@@ -511,7 +548,7 @@ define(
                     "                    <li>Sets the [install] stanza's `is_configured` property to `true`</li>" +
                     "                </ul>" +
                     "            </li>" +
-                    "            <li>setup_view_example.conf" +
+                    "            <li>vol.conf" +
                     "                <ul>" +
                     "                    <li>Creates a custom conf file to manage Splunk App specific settings</li>" +
                     "                    <li>Creates the stanza [configs]</li>" +
@@ -526,6 +563,16 @@ define(
                     "                <input type='text' name='base_directory' placeholder='/data/memory'></input>" +
                     "            </div>" +
                     "        </div>" +
+                    "        <h2>Select Application Mode</h2>" +
+                    "        <div class='user_input'>" +
+                    "            <select name='installation_mode' id='installation_mode'>" +
+                    "                <option selected='selected' value='demo'>Standalone</option>" +
+                    "                <option value='indexer'>Indexer</option>" +
+                    "                <option value='forwarder'>Universal Forwarder</option>" +
+                    "                <option value='searchhead'>Search Head</option>" +
+                    "            </select>" +
+                    "        </div>" +
+                    "        <br/>" +
                     "        <h2>Complete the Setup</h2>" +
                     "        <div>" +
                     "            Please press the 'Perform Setup` button below to complete the Splunk App setup." +

@@ -1,4 +1,4 @@
-import sys, json, os, re, platform, TAtest
+import sys, json, os, re, platform, TAvol
 from splunk.clilib import cli_common as cli
 
 def GetBaseDirectory():
@@ -19,7 +19,7 @@ base_dir = GetBaseDirectory().strip('"')
 #base_dir = "/data/memory"
 
 #instantiate arch class from TAvol relative import
-validation=TAtest.preChecks()
+validation=TAvol.preChecks()
 
 #grab the file seperator for proper directory traversal
 file_sep=validation.getFileSeperator(base_dir)
@@ -53,7 +53,7 @@ hosts = validation.getHostFolders(base_dir, platforms)
 ## )
 # when we start loading plugins we will now be able to parse ALL files matching pluginX and then unload the class
 # a dramatic efficiency should result by only loading what we need and destroying the class afterwards
-parser = TAtest.parser()
+parser = TAvol.parser()
 pluginList = parser.getPossiblePlugins(file_sep, base_dir, hosts)
 parser.parse(file_sep, base_dir, pluginList)
 exit(0)

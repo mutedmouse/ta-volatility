@@ -1,4 +1,4 @@
-# Overview Version 2.6.8
+# Overview Version 2.6.7
 
 Please see wiki for usage, guides and extended documentation (wiki currently under construction)
 
