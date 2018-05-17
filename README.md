@@ -1,6 +1,6 @@
 # Overview
 
-THis app imports json (unified output) formatted volatility memory analysis plugin results enabling aggregate memory analysis.
+This app imports json (unified output) formatted volatility memory analysis plugin results enabling aggregate memory analysis.
 
 # Setup View was used to build the configure page
 
