@@ -4,7 +4,7 @@ class amcache:
 	mode="standard"
 
 class apihooks:
-	mode="standard"
+	mode="custom"
 
 class atoms:
 	mode="standard"
